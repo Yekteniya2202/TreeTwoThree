@@ -1,28 +1,28 @@
-package com.company.classes2;
+package com.company.classes;
 
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.Function;
+import com.company.interfaces.ITree;
 
-public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
-
-
+public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, ITree<T>{
 
 
-    NodeTwoThree<T> root = null;
+
+
+    NodeTwoThree<T> root;
 
     public TreeTwoThree() {
-        root = new NodeTwoThree<T>();
+        root = new NodeTwoThree<>();
     }
 
     @Override
     public Iterator<T> iterator() {
-        Iterator<T> iterator = new Iterator<T>() {
-            ArrayList<T> elements = getSortedElements(new ArrayList<>());
+        return new Iterator<>() {
+            final ArrayList<T> elements = getSortedElements(new ArrayList<>());
             int i = 0;
+
             @Override
             public boolean hasNext() {
                 return i < elements.size();
@@ -33,44 +33,25 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
                 return elements.get(i++);
             }
         };
-        return iterator;
     }
 
     public ArrayList<T> getLessThen(T value){
         ArrayList<T> elements = getSortedElements(new ArrayList<>());
-        ArrayList<T> source = new ArrayList<>();
-        for(T elem : elements) {
-            if (elem.compareTo(value) < 0)
-                source.add(elem);
-        }
-        return source;
+        elements.removeIf(elem -> elem.compareTo(value) >= 0);
+        return elements;
     }
 
     public ArrayList<T> getMoreThen(T value){
         ArrayList<T> elements = getSortedElements(new ArrayList<>());
-        ArrayList<T> target = new ArrayList<>();
-        for(T elem : elements) {
-            if (elem.compareTo(value) > 0)
-                target.add(elem);
-        }
-        return target;
+        elements.removeIf(elem -> elem.compareTo(value) <= 0);
+        return elements;
     }
 
     public ArrayList<T> getRange(T start, T end){
-        ArrayList<T> lesser = getLessThen(end);
-        ArrayList<T> target = new ArrayList<>();
-        for(T elem : lesser) {
-            if (elem.compareTo(start) > 0){
-                target.add(elem);
-            }
-        }
-        return target;
+        ArrayList<T> elements = getSortedElements(new ArrayList<>());
+        elements.removeIf(elem -> elem.compareTo(start) < 0 || elem.compareTo(end) > 0);
+        return elements;
     }
-
-    private ArrayList<T> getElements(NodeTwoThree<T> node, ArrayList<T> targetArray){
-        return getSortedElements(node, targetArray);
-    }
-
     public T getMin() {
         return getMin(root);
     }
@@ -78,6 +59,13 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
     public T getMax() {
         return getMax(root);
     }
+
+    public ArrayList<T> getEquals(T value){
+        ArrayList<T> elements = getSortedElements(new ArrayList<>());
+        elements.removeIf(elem -> !elem.equals(value));
+        return elements;
+    }
+
     private T getMin(NodeTwoThree<T> node) {
         if (node.isLeaf())
             return node.keys.get(0);
@@ -99,9 +87,15 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
         return getMax(node.third);
     }
 
+    private ArrayList<T> getElements(NodeTwoThree<T> node, ArrayList<T> targetArray){
+        return getSortedElements(node, targetArray);
+    }
+
+
     public ArrayList<T> getSortedElements(ArrayList<T> targetArray){
         return getSortedElements(root, targetArray);
     }
+
     private ArrayList<T> getSortedElements(NodeTwoThree<T> node, ArrayList<T> targetArray){
         if (node == null || node.getSize() == 0) return targetArray;
 
@@ -114,13 +108,13 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
         }
         return targetArray;
     }
-    public void insert(T value) throws Exception {
+    public void insert(T value) {
         insert(root, value);
     }
 
     public boolean contains(T value){
 
-        return contains(root, value) == null ? false : true;
+        return contains(root, value) != null;
     }
 
     private NodeTwoThree<T> contains(NodeTwoThree<T> targetNode, T value) {
@@ -146,7 +140,7 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
 
         NodeTwoThree<T> item = contains(targetNode, value);
 
-        NodeTwoThree<T> min = null;
+        NodeTwoThree<T> min;
 
         if (item.keys.get(0).equals(value)) min = findMin(item.second);
         else min = findMin(item.third);
@@ -170,7 +164,7 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
 
     private void fix(NodeTwoThree<T> leaf) {
         if (leaf.getSize() == 0 && leaf.parent == null){
-               root = new NodeTwoThree<T>();
+               root = new NodeTwoThree<>();
                return;
         }
 
@@ -188,11 +182,11 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
             fix(leaf);
         }
     }
-    public void displayTree()
+    public String toString()
     {
         StringBuilder buffer = new StringBuilder(1000);
         root.print(buffer, "", "");
-        System.out.println(buffer.toString());
+        return buffer.toString();
         //recDisplayTree(root, 0, 0);
     }
 
@@ -219,7 +213,6 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
 
                 parent.remove(parent.keys.get(0));
 
-                first = null;
             }
             else if (second.equals(leaf)){
                 first.insert(parent.keys.get(0));
@@ -232,7 +225,6 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
                 parent.second = parent.third;
                 parent.third = null;
 
-                second = null;
             }
             else if (third.equals(leaf)){
                 second.insert(parent.keys.get(1));
@@ -244,7 +236,6 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
 
                 if (second.third != null) second.third.parent = second;
 
-                third = null;
             }
         }
         else if (parent.getSize() == 2 && (first.getSize() == 2 || second.getSize() == 2 || third.getSize() == 2)){
@@ -401,10 +392,11 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
         }
 
         if (parent.parent == null){
-            NodeTwoThree<T> tmp = null;
+            NodeTwoThree<T> tmp;
 
             if (parent.first != null) tmp = parent.first;
             else tmp = parent.second;
+            assert tmp != null;
             tmp.parent = null;
             return tmp;
         }
@@ -417,16 +409,23 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
     }
 
 
-    private void insert(NodeTwoThree<T> targetNode, T value) throws Exception {
-        if (contains(value)) throw new Exception("Such element is already presented");
+    private void insert(NodeTwoThree<T> targetNode, T value){
+        //if (contains(value)) throw new Exception("Such element is already presented");
         if (targetNode.getSize() == 0 && targetNode.parent == null) {
             targetNode.insert(value);
             return;
         }
         if (targetNode.isLeaf()) targetNode.insert(value);
         else if (value.compareTo(targetNode.keys.get(0)) < 0) insert(targetNode.first, value);
-        else if(targetNode.getSize() == 1 || targetNode.getSize() == 2 && value.compareTo(targetNode.keys.get(1)) < 0) insert(targetNode.second, value);
-        else insert(targetNode.third, value);
+        //2-вершина
+        else if (targetNode.getSize() == 1){
+            insert(targetNode.second, value);
+        }
+        //3-вершина
+        else {
+            if (value.compareTo(targetNode.keys.get(1)) <= 0) insert(targetNode.second, value);
+            else insert(targetNode.third, value);
+        }
 
         split(targetNode);
     }
@@ -435,8 +434,8 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
     private void split(NodeTwoThree<T> targetNode) {
         if(targetNode.getSize() < 3) return;
 
-        NodeTwoThree<T> left = new NodeTwoThree<T>(targetNode.keys.get(0), targetNode.first, targetNode.second, null, null, targetNode.parent);
-        NodeTwoThree<T> right = new NodeTwoThree<T>(targetNode.keys.get(2), targetNode.third, targetNode.fourth, null, null, targetNode.parent);
+        NodeTwoThree<T> left = new NodeTwoThree<>(targetNode.keys.get(0), targetNode.first, targetNode.second, null, null, targetNode.parent);
+        NodeTwoThree<T> right = new NodeTwoThree<>(targetNode.keys.get(2), targetNode.third, targetNode.fourth, null, null, targetNode.parent);
 
         //указываем родителей для новых вершин
         if (left.first != null) left.first.parent = left;
@@ -474,7 +473,7 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
             }
         }
         else {
-            parent = new NodeTwoThree<T>(targetNode.keys.get(1), left, right, null, null, null);
+            parent = new NodeTwoThree<>(targetNode.keys.get(1), left, right, null, null, null);
             left.parent = parent;
             right.parent = parent;
             root = parent;
@@ -482,7 +481,7 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T> {
     }
 
     private NodeTwoThree<T> findMin(NodeTwoThree<T> targetNode, T value) {
-        if (targetNode == null) return targetNode;
+        if (targetNode == null) return null;
         if (targetNode.first == null) return targetNode;
         else return findMin(targetNode.first, value);
     }

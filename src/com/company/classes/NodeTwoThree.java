@@ -1,4 +1,4 @@
-package com.company.classes2;
+package com.company.classes;
 
 import java.util.ArrayList;
 import java.util.Comparator;
