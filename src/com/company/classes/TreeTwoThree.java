@@ -164,8 +164,8 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, ITree
 
     private void fix(NodeTwoThree<T> leaf) {
         if (leaf.getSize() == 0 && leaf.parent == null){
-               root = new NodeTwoThree<>();
-               return;
+            root = new NodeTwoThree<>();
+            return;
         }
 
         if (leaf.getSize() != 0){
@@ -417,7 +417,7 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, ITree
         }
         if (targetNode.isLeaf()) targetNode.insert(value);
         else if (value.compareTo(targetNode.keys.get(0)) < 0) insert(targetNode.first, value);
-        //2-вершина
+            //2-вершина
         else if (targetNode.getSize() == 1){
             insert(targetNode.second, value);
         }

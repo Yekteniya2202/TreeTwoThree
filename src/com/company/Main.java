@@ -1,6 +1,7 @@
 package com.company;
 
 import com.company.classes.TreeFillerInteger;
+import com.company.classes.TreeFillerString;
 import com.company.classes.TreeTwoThree;
 import com.company.classes.TreeTwoThreeChecker;
 
@@ -17,50 +18,23 @@ public class Main {
     {
         try {
             long value;
-            TreeTwoThree<Integer> theTree = new TreeTwoThree<Integer>();
+            TreeTwoThree<String> theTree = new TreeTwoThree<>();
             String fileDir = "out/production/ TreeTwoThree/com/company/input/";
-            String fileSrc = fileDir + "1.txt";
-            try(BufferedReader reader = new BufferedReader(new FileReader(fileSrc))){
-                TreeFillerInteger treeFillerInteger = new TreeFillerInteger(theTree, reader);
+            String fileSrc = fileDir + "2.txt";
+            try (BufferedReader reader = new BufferedReader(new FileReader(fileSrc))) {
+                TreeFillerString treeFillerInteger = new TreeFillerString(theTree, reader);
                 treeFillerInteger.fill();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            System.out.println(theTree.toString());
+            /*
             System.out.println(theTree.getLessThen(5));
             System.out.println(theTree.getMoreThen(5));
             System.out.println(theTree.getRange(1, 5));
-            System.out.println(theTree.getEquals(1));
-            while (true) {
-                System.out.print("Enter first letter of ");
-                System.out.print("show, insert, or find: ");
-                char choice = getChar();
-                switch (choice) {
-                    case 's':
-                        System.out.println(theTree.toString());
-                        break;
-                    case 'i':
-                        System.out.print("Enter value to insert: ");
-                        value = getInt();
-                        theTree.insert((int) value);
-                        break;
-                    case 'c':
-                        System.out.print("Enter value to find: ");
-                        value = getInt();
-                        boolean found = theTree.contains((int) value);
-                        if (found)
-                            System.out.println("Found " + value);
-                        else
-                            System.out.println("Could not find " + value);
-                        break;
-                    case 'd':
-                        System.out.print("Enter value to delete: ");
-                        value = getInt();
-                        theTree.delete((int) value);
-                        break;
-                    default:
-                        System.out.print("Invalid entry\n");
-                }
-            }
+            System.out.println(theTree.getEquals(1));*/
         }
-        catch (Exception e) {
+        catch (Exception e){
             e.printStackTrace();
         }
     }
@@ -86,4 +60,3 @@ public class Main {
     }
 
 }
-
