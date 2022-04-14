@@ -8,12 +8,12 @@ import java.io.IOException;
 public class TreeFillerString {
     private ITree<String> tree = null;
     private BufferedReader in = null;
-    TreeFillerString(ITree<String> tree, BufferedReader in){
+    public TreeFillerString(ITree<String> tree, BufferedReader in){
         this.tree = tree;
         this.in = in;
     }
 
-    void fill() throws IOException {
+    public void fill() throws IOException {
         String line = in.readLine();
         while (line != null) {
             tree.insert(line);
