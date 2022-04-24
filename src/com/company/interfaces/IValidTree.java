@@ -1,5 +1,7 @@
 package com.company.interfaces;
 
+import java.util.Set;
+
 public interface IValidTree<T> {
-    boolean isValid(ITree<T> tree);
+    boolean isValid(Set<T> tree);
 }

@@ -1,26 +1,135 @@
 package com.company.classes;
 
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import com.company.interfaces.ITree;
+import java.util.*;
 
-public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, ITree<T>{
-
-
-
+public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, Set<T> {
 
     NodeTwoThree<T> root;
 
+    private int size = 0;
     public TreeTwoThree() {
         root = new NodeTwoThree<>();
     }
 
     @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public boolean add(T value) {
+        if (insert(root, value)){
+            size++;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean contains(Object value){
+
+        try {
+            return contains(root, (T)value) != null;
+        }
+        catch (ClassCastException cce){
+            return false;
+        }
+    }
+
+    @Override
+    public boolean remove(Object value){
+        try {
+            if (delete(root, (T)value)){
+                size--;
+                return true;
+            }
+            return false;
+        }
+        catch (ClassCastException cce){
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    @Override
+    public Object[] toArray() {
+        return getSortedElements().toArray();
+    }
+
+    @Override
+    public <T1> T1[] toArray(T1[] a) {
+        return null;
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        for(var value : c){
+            if (contains(value) == false){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends T> c) {
+        for(var value : c){
+            if (contains(value)){
+                return false;
+            }
+        }
+
+        for(var value : c){
+            add(value);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        var elems = getSortedElements();
+        boolean modified = elems.removeAll(c);
+
+        if (modified == false){
+            return false;
+        }
+
+        for(var value : elems){
+            remove(value);
+        }
+        return true;
+
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        for(var value : c){
+            if (contains(value) == false){
+                return false;
+            }
+        }
+
+        for(var value : c){
+            remove(value);
+        }
+        return true;
+    }
+
+    @Override
+    public void clear() {
+        root = new NodeTwoThree<>();
+
+    }
+
+    @Override
     public Iterator<T> iterator() {
         return new Iterator<>() {
-            final ArrayList<T> elements = getSortedElements(new ArrayList<>());
+            final ArrayList<T> elements = getSortedElements();
             int i = 0;
 
             @Override
@@ -35,23 +144,26 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, ITree
         };
     }
 
+
+
     public ArrayList<T> getLessThen(T value){
-        ArrayList<T> elements = getSortedElements(new ArrayList<>());
+        ArrayList<T> elements = getSortedElements();
         elements.removeIf(elem -> elem.compareTo(value) >= 0);
         return elements;
     }
 
     public ArrayList<T> getMoreThen(T value){
-        ArrayList<T> elements = getSortedElements(new ArrayList<>());
+        ArrayList<T> elements = getSortedElements();
         elements.removeIf(elem -> elem.compareTo(value) <= 0);
         return elements;
     }
 
     public ArrayList<T> getRange(T start, T end){
-        ArrayList<T> elements = getSortedElements(new ArrayList<>());
+        ArrayList<T> elements = getSortedElements();
         elements.removeIf(elem -> elem.compareTo(start) < 0 || elem.compareTo(end) > 0);
         return elements;
     }
+
     public T getMin() {
         return getMin(root);
     }
@@ -61,7 +173,7 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, ITree
     }
 
     public ArrayList<T> getEquals(T value){
-        ArrayList<T> elements = getSortedElements(new ArrayList<>());
+        ArrayList<T> elements = getSortedElements();
         elements.removeIf(elem -> !elem.equals(value));
         return elements;
     }
@@ -87,13 +199,8 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, ITree
         return getMax(node.third);
     }
 
-    private ArrayList<T> getElements(NodeTwoThree<T> node, ArrayList<T> targetArray){
-        return getSortedElements(node, targetArray);
-    }
-
-
-    public ArrayList<T> getSortedElements(ArrayList<T> targetArray){
-        return getSortedElements(root, targetArray);
+    public ArrayList<T> getSortedElements(){
+        return getSortedElements(root, new ArrayList<T>());
     }
 
     private ArrayList<T> getSortedElements(NodeTwoThree<T> node, ArrayList<T> targetArray){
@@ -107,14 +214,6 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, ITree
             getSortedElements(node.third, targetArray);
         }
         return targetArray;
-    }
-    public void insert(T value) {
-        insert(root, value);
-    }
-
-    public boolean contains(T value){
-
-        return contains(root, value) != null;
     }
 
     private NodeTwoThree<T> contains(NodeTwoThree<T> targetNode, T value) {
@@ -131,12 +230,8 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, ITree
 
     }
 
-    public void delete(T value){
-        delete(root, value);
-    }
-
-    private void delete(NodeTwoThree<T> targetNode, T value) {
-        if (contains(value) == false) throw new NoSuchElementException("Element " + value + " is not presented in the TreeTwoThree");
+    private boolean delete(NodeTwoThree<T> targetNode, T value) {
+        if (contains(value) == false) return false;
 
         NodeTwoThree<T> item = contains(targetNode, value);
 
@@ -160,6 +255,7 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, ITree
             if (root.first != null) root = root.first;
             else root = root.second;
         }
+        return true;
     }
 
     private void fix(NodeTwoThree<T> leaf) {
@@ -182,8 +278,8 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, ITree
             fix(leaf);
         }
     }
-    public String toString()
-    {
+
+    public String toString() {
         StringBuilder buffer = new StringBuilder(1000);
         root.print(buffer, "", "");
         return buffer.toString();
@@ -408,12 +504,11 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, ITree
         return findMin(targetNode.first);
     }
 
-
-    private void insert(NodeTwoThree<T> targetNode, T value){
-        //if (contains(value)) throw new Exception("Such element is already presented");
+    private boolean insert(NodeTwoThree<T> targetNode, T value){
+        if (contains(value)) return false;
         if (targetNode.getSize() == 0 && targetNode.parent == null) {
             targetNode.insert(value);
-            return;
+            return true;
         }
         if (targetNode.isLeaf()) targetNode.insert(value);
         else if (value.compareTo(targetNode.keys.get(0)) < 0) insert(targetNode.first, value);
@@ -428,8 +523,8 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, ITree
         }
 
         split(targetNode);
+        return true;
     }
-
 
     private void split(NodeTwoThree<T> targetNode) {
         if(targetNode.getSize() < 3) return;
@@ -479,11 +574,4 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, ITree
             root = parent;
         }
     }
-
-    private NodeTwoThree<T> findMin(NodeTwoThree<T> targetNode, T value) {
-        if (targetNode == null) return null;
-        if (targetNode.first == null) return targetNode;
-        else return findMin(targetNode.first, value);
-    }
-
 }

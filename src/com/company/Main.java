@@ -18,21 +18,22 @@ public class Main {
     {
         try {
             long value;
-            TreeTwoThree<String> theTree = new TreeTwoThree<>();
+            TreeTwoThree<Integer> theTree = new TreeTwoThree<>();
             String fileDir = "out/production/ TreeTwoThree/com/company/input/";
-            String fileSrc = fileDir + "2.txt";
+            String fileSrc = fileDir + "1.txt";
             try (BufferedReader reader = new BufferedReader(new FileReader(fileSrc))) {
-                TreeFillerString treeFillerInteger = new TreeFillerString(theTree, reader);
+                TreeFillerInteger treeFillerInteger = new TreeFillerInteger(theTree, reader);
                 treeFillerInteger.fill();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println(theTree.toString());
-            /*
-            System.out.println(theTree.getLessThen(5));
+
+            System.out.println(theTree);
+            System.out.println(theTree.size());
+            System.out.println(theTree.getSortedElements());
             System.out.println(theTree.getMoreThen(5));
-            System.out.println(theTree.getRange(1, 5));
-            System.out.println(theTree.getEquals(1));*/
+            System.out.println(theTree.getLessThen(76));
+            System.out.println(theTree.getRange(5, 76));
         }
         catch (Exception e){
             e.printStackTrace();

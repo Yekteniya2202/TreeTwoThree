@@ -1,10 +1,12 @@
 package com.company.classes;
-import com.company.interfaces.ITree;
 import com.company.interfaces.IValidTree;
+
+import java.util.Set;
+
 public class TreeTwoThreeChecker<T extends  Comparable<T>> implements IValidTree<T> {
 
     @Override
-    public boolean isValid(ITree<T> tree) {
+    public boolean isValid(Set<T> tree) {
         return isValid((TreeTwoThree<T>)tree);
     }
 
