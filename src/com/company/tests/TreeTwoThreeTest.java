@@ -4,9 +4,7 @@ import com.company.classes.TreeTwoThree;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,6 +26,23 @@ class TreeTwoThreeTest {
         for(int i = -1000; i <= 1000; i++){
             Assert.assertTrue(tree.contains(i));
         }
+    }
+
+    @org.junit.jupiter.api.Test
+    void addDuplicate() {
+        Set<String> tree = new TreeTwoThree<String>();
+        Set<String> all = new HashSet<>();
+        for(int i = -1000; i <= 1000; i++){
+            String str = getRandomString(random, "qwerty", 5);
+            if (all.add(str)){
+                Assert.assertTrue(tree.add(str));
+            }
+            else{
+                Assert.assertFalse(tree.add(str));
+            }
+
+        }
+
     }
 
     @org.junit.jupiter.api.Test
@@ -112,5 +127,15 @@ class TreeTwoThreeTest {
 
     @org.junit.jupiter.api.Test
     void removeAll() {
+    }
+
+    Random random = new Random();
+    private static String getRandomString(Random rng, String characters, int size){
+        char[] text = new char[size];
+        for (int i = 0; i < size; i++)
+        {
+            text[i] = characters.charAt(rng.nextInt(characters.length()));
+        }
+        return new String(text);
     }
 }

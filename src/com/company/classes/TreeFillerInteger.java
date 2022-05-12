@@ -22,6 +22,4 @@ public class TreeFillerInteger {
             line = in.readLine();
         }
     }
-
-
 }

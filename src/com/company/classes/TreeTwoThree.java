@@ -1,22 +1,54 @@
 package com.company.classes;
 
 
+import com.sun.source.tree.Tree;
+
 import java.util.*;
 
+/**
+ * Object of class <code>TreeTwoThree</code> represents 2-3 tree
+ * 1) each node has 1 value and 2 sons
+ * OR
+ * each node has 2 values and 3 sons
+ * 2) if node is 2-Node - contains a;
+ *  less a - first child,
+ *  more a - second child.
+ *  if node is 3-Node - contains a, b;
+ *  less a - first child,
+ *  more a, less b - second child,
+ *  more b - third child.
+ * @param <T> type of object, extendind Comparable
+ * @version 1.0
+ * @author Michael Babaev
+ */
 public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, Set<T> {
 
     NodeTwoThree<T> root;
 
     private int size = 0;
+
+    /**
+     * Constructor make empty root node with no children
+     */
     public TreeTwoThree() {
         root = new NodeTwoThree<>();
     }
 
+    /**
+     *
+     * @return size of tree
+     */
     @Override
     public int size() {
         return size;
     }
 
+    /**
+     * Adding value to tree
+     *
+     * @param value value to add
+     * @return true if tree did not contain value, otherwise false
+     */
     @Override
     public boolean add(T value) {
         if (insert(root, value)){
@@ -26,6 +58,11 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, Set<T
         return false;
     }
 
+    /**
+     * Containing the value in the tree
+     * @param value value to find
+     * @return true, if tree contains value, otherwise false
+     */
     @Override
     public boolean contains(Object value){
 
@@ -37,6 +74,11 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, Set<T
         }
     }
 
+    /**
+     * Removing the value from the tree
+     * @param value value to remove
+     * @return true if tree contained value and it was deleted, otherwise false
+     */
     @Override
     public boolean remove(Object value){
         try {
@@ -51,21 +93,40 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, Set<T
         }
     }
 
+    /**
+     *
+     * @return true if the tree has no nodes
+     */
     @Override
     public boolean isEmpty() {
         return size == 0;
     }
 
+    /**
+     * Casting tree to array of Objects
+     * @return Object[] in natural order
+     */
     @Override
     public Object[] toArray() {
         return getSortedElements().toArray();
     }
 
+    /**
+     * Has no implementation
+     * @param a
+     * @param <T1>
+     * @return
+     */
     @Override
     public <T1> T1[] toArray(T1[] a) {
         return null;
     }
 
+    /**
+     * Containing all of collection elements
+     * @param c - collection of elements
+     * @return true if tree contains every element of c
+     */
     @Override
     public boolean containsAll(Collection<?> c) {
         for(var value : c){
@@ -76,6 +137,11 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, Set<T
         return true;
     }
 
+    /**
+     * Adding all collection elements
+     * @param c - collection of elements
+     * @return true, if every element was successfully added to the tree
+     */
     @Override
     public boolean addAll(Collection<? extends T> c) {
         for(var value : c){
@@ -90,6 +156,12 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, Set<T
         return true;
     }
 
+
+    /**
+     * Retaining of all collection's elements
+     * @param c - collection of elements
+     * @return true, if all elements, that are not containing in c, were successfully removed from the tree
+     */
     @Override
     public boolean retainAll(Collection<?> c) {
         var elems = getSortedElements();
@@ -106,6 +178,11 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, Set<T
 
     }
 
+    /**
+     * Removing of all collection's elements
+     * @param c - collection of elements
+     * @return true, if all elements, that are containing in c, were successfully removed from the tree
+     */
     @Override
     public boolean removeAll(Collection<?> c) {
         for(var value : c){
@@ -120,14 +197,23 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, Set<T
         return true;
     }
 
+    /**
+     * Clears tree, root will contain empty node with no children
+     */
     @Override
     public void clear() {
+        size = 0;
         root = new NodeTwoThree<>();
-
     }
 
+
+    /**
+     * Return read iterator of the tree. The rule of moving the iterator is infix-traverse (natural order)
+     * @return iterator object
+     */
     @Override
     public Iterator<T> iterator() {
+
         return new Iterator<>() {
             final ArrayList<T> elements = getSortedElements();
             int i = 0;
@@ -145,19 +231,32 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, Set<T
     }
 
 
-
+    /**
+     * @param value support element
+     * @return ArrayList of elements, less than value
+     */
     public ArrayList<T> getLessThen(T value){
         ArrayList<T> elements = getSortedElements();
         elements.removeIf(elem -> elem.compareTo(value) >= 0);
         return elements;
     }
 
+    /**
+     * @param value support element
+     * @return ArrayList of elements, more than value
+     */
     public ArrayList<T> getMoreThen(T value){
         ArrayList<T> elements = getSortedElements();
         elements.removeIf(elem -> elem.compareTo(value) <= 0);
         return elements;
     }
 
+    /**
+     *
+     * @param start left side element
+     * @param end right side element
+     * @return range (start;end)
+     */
     public ArrayList<T> getRange(T start, T end){
         ArrayList<T> elements = getSortedElements();
         elements.removeIf(elem -> elem.compareTo(start) < 0 || elem.compareTo(end) > 0);
@@ -172,6 +271,14 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, Set<T
         return getMax(root);
     }
 
+    /**
+     * Method is indefinite by the task.
+     * Tree can not contain 2 equals elements
+     * But task requires to get the list of equal elements
+     * 0_O
+     * @param value support element
+     * @return the ArrayList of equal elements
+     */
     public ArrayList<T> getEquals(T value){
         ArrayList<T> elements = getSortedElements();
         elements.removeIf(elem -> !elem.equals(value));
@@ -199,6 +306,9 @@ public class TreeTwoThree<T extends Comparable<T>> implements Iterable<T>, Set<T
         return getMax(node.third);
     }
 
+    /**
+     * @return ArrayList of sorted elements in natural order
+     */
     public ArrayList<T> getSortedElements(){
         return getSortedElements(root, new ArrayList<T>());
     }

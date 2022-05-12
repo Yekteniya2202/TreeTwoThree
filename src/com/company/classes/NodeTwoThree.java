@@ -3,12 +3,20 @@ package com.company.classes;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+/**
+ * Repredents the 2-3 Node in TreeTwoThree
+ * The properties are described in TreeTwoThree documentatin
+ * @param <T> type of object, extendind Comparable
+ * @version 1.0
+ * @author Michael Babaev
+ */
 public class NodeTwoThree<T extends Comparable<T>> {
     public ArrayList<T> keys = new ArrayList<>();
     private Comparator<T> comparator = (o1, o2) -> o1.compareTo(o2);
     NodeTwoThree<T> first, second, third, fourth;
     NodeTwoThree<T> parent;
 
+    boolean visited = false;
     public NodeTwoThree() {}
     public NodeTwoThree(T value){
         insert(value);
